@@ -82,11 +82,40 @@ make bin/apus-qwen        # macOS: also `make metal` for the GPU backend
 Details, knobs, and expectations: `docs/USAGE.md`. Design:
 `docs/ARCHITECTURE.md`. Numerics contract: `docs/M4-CONTRACT.md`.
 
+## Quickstart (Windows)
+
+Two supported routes. **WSL2** is the simplest — follow the Linux
+quickstart above as-is. **Native Windows** (the CI-gated path) uses
+MSYS2 only for the C toolchain; the Python tools run on a python.org
+Python:
+
+```sh
+# 1. Install MSYS2 (https://www.msys2.org) and Python 3.11+ from
+#    python.org (tick "Add to PATH").
+# 2. Open the "MSYS2 UCRT64" shell — it inherits the Windows PATH:
+pacman -Sy --needed mingw-w64-ucrt-x86_64-gcc make
+export PYTHONUTF8=1     # Windows Python defaults to cp1252; the tools read UTF-8 JSON
+pip install numpy safetensors tokenizers huggingface_hub jinja2
+
+# `which python` must resolve into C:\... (the python.org install), NOT
+# /usr/bin/python — an MSYS2 python lacks the wheels and shadows it.
+make bin/apus-qwen PY=python
+
+# Download + convert, chat, and serve exactly as in the quickstart above:
+python tools/download.py --repo Qwen/Qwen3.6-35B-A3B \
+    --work weights/work-qwen --out weights/apus-qwen
+python tools/chat.py --model weights/apus-qwen --tiered
+```
+
+The build produces a native `apus-qwen.exe` using the x86_64 AVX2 CPU
+kernels (the same code as the Linux port, bitwise-gated in CI as
+`test-m12a2`); there is no GPU backend on Windows — Metal is macOS-only.
+
 ## Testing
 
 Every subsystem is gated (details in `tests/*/README.md`). The full
-milestone battery (M0–M13) is green on macOS and Linux/x86_64, with
-Windows gated in CI; `tests/m11/` pins the standing real-model golden.
+milestone battery (M0–M13) is green in CI on macOS, Linux/x86_64, and
+Windows (MSYS2 UCRT64); `tests/m11/` pins the standing real-model golden.
 
 ## License & attribution
 
