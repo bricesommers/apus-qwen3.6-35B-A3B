@@ -363,7 +363,8 @@ def main():
         np.argmax(a.reshape(-1, V), axis=1)
         != np.argmax(b.reshape(-1, V), axis=1)))
     env_rows.append(("logits", m, rel))
-    with open(os.path.join(FIX, "envelope.txt"), "w") as f:
+    with open(os.path.join(FIX, "envelope.txt"), "w",
+              encoding="utf-8", newline="") as f:
         for name, mm, rl in env_rows:
             f.write(f"{name} {mm:.9g} {rl:.9g}\n")
             print(f"envelope {name:14s} maxabs {mm:.4g} rel {rl:.4g}")
@@ -377,12 +378,17 @@ def main():
         nxt = int(np.argmax(logits[-1]))
         toks.append(nxt)
         chain.append(nxt)
-    with open(os.path.join(FIX, "cli_greedy.txt"), "w") as f:
+    # newline="" — byte-stable across platforms: the Makefile CLI smoke
+    # diffs this against the engine's binary-mode stdout (the base's
+    # tests/m2/gen_golden.py convention; Windows text mode would CRLF it)
+    with open(os.path.join(FIX, "cli_greedy.txt"), "w",
+              encoding="utf-8", newline="") as f:
         for t in toks:
             f.write(f"{t}\n")
     print("cli greedy:", " ".join(str(t) for t in toks))
 
-    with open(os.path.join(FIX, "manifest.txt"), "w") as f:
+    with open(os.path.join(FIX, "manifest.txt"), "w",
+              encoding="utf-8", newline="") as f:
         f.write(f"seed={SEED}\nsample_seed={SAMPLE_RNG_SEED}\n")
         f.write(f"greedy_steps={GREEDY_STEPS}\n")
         f.write(f"sampled_steps={SAMPLED_STEPS}\n")
