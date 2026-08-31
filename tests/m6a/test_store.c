@@ -111,8 +111,12 @@ static uint8_t *read_member(int layer, int eid, int member, size_t *n) {
         apus_st_lazy_close(lz);
         return NULL;
     }
+    *n = (size_t)t->nbytes;   /* BEFORE close: t points into lz (the
+                               * Windows CI lesson — reading t->nbytes
+                               * after close is a use-after-free; POSIX
+                               * free() leaves the bytes in place and hid
+                               * it, UCRT does not) */
     apus_st_lazy_close(lz);
-    *n = (size_t)t->nbytes;
     return buf;
 }
 

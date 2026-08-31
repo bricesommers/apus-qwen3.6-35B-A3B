@@ -99,21 +99,7 @@ jobs:
         shell: msys2 {0}
         run: make -s bin/apus-qwen PY=python
 
-      # TEMP DEBUG (snapshots 4-5): test_store segfaults on Windows with
-      # no output (stdout buffered, lost on the crash). Run it under gdb
-      # for a backtrace. Battery step below skipped this run only;
-      # restored with the real fix.
-      - name: DEBUG test_store backtrace
-        shell: msys2 {0}
-        run: |
-          NATIVE_PY="$(which python)"   # capture BEFORE pacman: gdb pulls
-          pacman -Sy --noconfirm --needed mingw-w64-ucrt-x86_64-gdb
-          make -s PY="$NATIVE_PY" golden-m6a tests/m6a/bin/test_store
-          gdb -batch -ex run -ex bt \
-            ./tests/m6a/bin/test_store.exe || true
-
-      - name: battery (SKIPPED for the debug snapshot)
-        if: false
+      - name: battery
         shell: msys2 {0}
         run: |
           make -s PY=python \
