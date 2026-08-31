@@ -1,0 +1,6 @@
+metal: backend enabled (wrapped 0 B so far)
+loaded weights/apus-qwen (40 layers, hidden 2048, vocab 248320, tiered) in 1.52s
+prefill 15 tokens in 4.99s (3.0 tok/s)
+decode 24 tokens in 10.93s (2.2 tok/s)
+pilot: predictions 975, enqueued 7800 (full-drops 0), issued 7800 (stale 0), recall 5960/7488
+store: hits 3690 misses 6163 preads 7311 (hint 7311, demand 0) evictions 4791 rss_drops 0 waits 997

@@ -1,0 +1,23 @@
+loaded weights/apus-qwen (40 layers, hidden 2048, vocab 248320, tiered) in 1.45s
+prefill 15 tokens in 4.50s (3.3 tok/s)
+decode 24 tokens in 8.94s (2.7 tok/s)
+pilot: predictions 975, enqueued 7800 (full-drops 0), issued 7800 (stale 0), recall 5960/7488
+store: hits 3690 misses 6163 preads 7309 (hint 7309, demand 0) evictions 4791 rss_drops 0 waits 1096
+       15.17 real        18.51 user        30.45 sys
+          8905342976  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             1301070  page reclaims
+                   2  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                7148  voluntary context switches
+              661075  involuntary context switches
+        206703419878  instructions retired
+        145309662644  cycles elapsed
+         10074415816  peak memory footprint

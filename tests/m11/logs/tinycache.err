@@ -1,0 +1,5 @@
+loaded weights/apus-qwen (40 layers, hidden 2048, vocab 248320, tiered) in 1.48s
+prefill 15 tokens in 4.02s (3.7 tok/s)
+decode 24 tokens in 8.30s (2.9 tok/s)
+pilot: predictions 975, enqueued 7800 (full-drops 0), issued 7800 (stale 0), recall 5960/7488
+store: hits 1021 misses 8832 preads 10346 (hint 10346, demand 0) evictions 5869 rss_drops 0 waits 1605

@@ -1,0 +1,116 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - name: toolchain + python deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc make python3 python3-venv
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install -q numpy safetensors tokenizers jinja2
+      - name: build
+        run: make -s bin/apus-qwen PY=/tmp/venv/bin/python
+      - name: battery
+        run: |
+          make -s PY=/tmp/venv/bin/python \
+            test-m2 test-m3 test-m4a test-m4b test-m4c test-m5 test-m6a \
+            test-m6b test-m6c test-m7a test-m8 test-m9a test-m9b test-m9c \
+            test-m12a2
+      - name: m0/m1 (python unittest)
+        run: |
+          /tmp/venv/bin/python -m unittest discover -s tests/m0
+          /tmp/venv/bin/python -m unittest discover -s tests/m1
+
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - name: python deps (venv — Homebrew python is PEP 668 managed)
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install -q numpy safetensors tokenizers jinja2
+      - name: build
+        run: make -s bin/apus-qwen PY=/tmp/venv/bin/python
+      - name: battery
+        run: |
+          make -s PY=/tmp/venv/bin/python \
+            test-m2 test-m3 test-m4a test-m4b test-m4c test-m5 test-m6a \
+            test-m6b test-m6c test-m7a test-m8 test-m9a test-m9b test-m9c \
+            test-m12a2
+      - name: metal backend
+        run: make -s metal test-m10 PY=/tmp/venv/bin/python
+      - name: m0/m1 (python unittest)
+        run: |
+          /tmp/venv/bin/python -m unittest discover -s tests/m0
+          /tmp/venv/bin/python -m unittest discover -s tests/m1
+
+  # M13: native Windows port (the Apus M15 shim layer, ported across the
+  # adapter seam — see tests/m13/README.md). windows-latest, MinGW-w64 gcc
+  # via MSYS2 UCRT64. Same battery as linux/macos minus test-m10 (Metal is
+  # macOS-only); ubsan-* targets stay out of CI on every OS (MinGW has no
+  # sanitizer runtimes anyway). Fixtures regenerate on-runner via a NATIVE
+  # Windows Python (setup-python; wheels install cleanly — the MSYS2/mingw
+  # Python reports a platform tag wheels don't match), invoked from the
+  # msys2 shell through the inherited Windows PATH.
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      # Windows Python defaults to the cp1252 locale; the oracles/tools
+      # read UTF-8 JSON (tokenizer.json, golden specs). UTF-8 mode is the
+      # blanket fix (server.py/chat.py also pin utf-8 explicitly).
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          # update:false — a full MSYS2 system upgrade kills its own shell
+          # mid-run on GH runners ("Killing remaining tasks") and is flaky;
+          # we only need a pacman db sync, done in the next step.
+          update: false
+          path-type: inherit   # keep the Windows PATH (native python below)
+
+      - name: toolchain (MinGW-w64)
+        shell: msys2 {0}
+        # 2026 MSYS2 naming: arch-qualified (ucrt-x86_64, not ucrt64).
+        run: pacman -Sy --noconfirm --needed mingw-w64-ucrt-x86_64-gcc make
+
+      # Native Windows Python for the fixture-generating oracles (PY=python).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: python deps
+        run: pip install numpy safetensors tokenizers jinja2
+
+      - name: build
+        shell: msys2 {0}
+        run: make -s bin/apus-qwen PY=python
+
+      - name: battery
+        shell: msys2 {0}
+        run: |
+          make -s PY=python \
+            test-m2 test-m3 test-m4a test-m4b test-m4c test-m5 test-m6a \
+            test-m6b test-m6c test-m7a test-m8 test-m9a test-m9b test-m9c \
+            test-m12a2
+
+      - name: m0/m1 (python unittest)
+        shell: msys2 {0}
+        run: |
+          python -m unittest discover -s tests/m0
+          python -m unittest discover -s tests/m1
+
+# WSL2 remains an equally supported Windows route (the Linux path as-is).

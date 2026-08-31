@@ -1,0 +1,36 @@
+apus-qwen
+=========
+
+Copyright (c) 2026 Brice Sommers
+
+Licensed under the PolyForm Noncommercial License 1.0.0 — see
+LICENCE.PolyForm-Noncommercial. Required Notice: Copyright (c) 2026
+Brice Sommers.
+
+This project contains code and design elements derived from, and reference
+materials by, third parties:
+
+- colibri (https://github.com/JustVugg/colibri), Copyright its authors —
+  licensed under the Apache License 2.0 (see LICENSE.apache-2.0).
+  The safetensors shard reader (c/st.h), tiering design, thread pool,
+  platform shims, and serving pattern descend from colibri via the apus
+  and apus-ling projects; per-file attribution headers are kept where
+  code is reused.
+- apus-ling (https://github.com/bricesommers/apus-ling-3.0-flash-bf16)
+  and apus (https://github.com/bricesommers/apus-deepseek-v4-flash) by
+  the same author — the base engines this adapter is seeded from.
+- Qwen3.6-35B-A3B (https://huggingface.co/Qwen/Qwen3.6-35B-A3B) by the
+  Qwen Team / Alibaba — model weights under the Apache License 2.0;
+  reference files in reference/ (config, model card, tokenizer spec,
+  chat template) are reproduced for specification purposes.
+- Hugging Face transformers (https://github.com/huggingface/transformers)
+  — Apache License 2.0. reference/modeling_qwen3_5_moe.py and
+  reference/configuration_qwen3_5_moe.py are unmodified reference copies
+  used to establish the normative numerics.
+- flash-linear-attention (fla-core, https://github.com/fla-org/flash-linear-attention)
+  by Songlin Yang, Yu Zhang, et al. — MIT License. reference/ling/fla/
+  contains unmodified reference copies (see reference/ling/fla/LICENSE)
+  used for the KDA/GDN semantics diff.
+- vLLM (https://github.com/vllm-project/vllm) — Apache License 2.0.
+  reference/ling/vllm/ contains unmodified reference copies; vLLM's
+  qwen3_next_mtp.py informed the MTP structure (M8).

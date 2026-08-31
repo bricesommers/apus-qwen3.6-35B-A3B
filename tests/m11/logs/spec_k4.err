@@ -1,0 +1,4 @@
+loaded weights/apus-qwen (40 layers, hidden 2048, vocab 248320, tiered) in 1.69s
+spec k=4: 24 tokens in 21.84s (1.10 tok/s), 9 steps (2.67 tok/batch), accepted 15/27 drafts (55.6%), 5 full, 4 re-feeds
+pilot: predictions 546, enqueued 4368 (full-drops 0), issued 4368 (stale 0), recall 985/1248
+store: hits 3960 misses 7917 preads 8539 (hint 8539, demand 0) evictions 6085 rss_drops 0 waits 1113
